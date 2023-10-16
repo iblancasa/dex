@@ -38,17 +38,11 @@ RUN mkdir -p /var/dex
 RUN mkdir -p /etc/dex
 COPY config.docker.yaml /etc/dex/
 
+FROM ttl.sh/gomplate-multi:2h AS gomplate-orig
+
 FROM alpine:3.18.2 AS gomplate
-
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT
-
-ENV GOMPLATE_VERSION=v3.11.4
-
-RUN wget -O /usr/local/bin/gomplate \
-  "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${TARGETOS:-linux}-${TARGETARCH:-amd64}${TARGETVARIANT}" \
-  && chmod +x /usr/local/bin/gomplate
+COPY --from=gomplate-orig /gomplate /usr/local/bin/
+RUN chmod +x /usr/local/bin/gomplate
 
 # For Dependabot to detect base image versions
 FROM alpine:3.18.2 AS alpine
